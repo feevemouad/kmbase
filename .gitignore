@@ -1,6 +1,8 @@
 # Python
 *.pyc
-*/__pycache__/
+*__pycache__/
+API/__pycache__
+.vscode/
 # Virtual Environment
 venv/
 .streamlit/

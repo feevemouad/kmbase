@@ -1,10 +1,8 @@
 from flask import Blueprint, request, jsonify
+from Services.HashingService import HashingService
 from models import db, Users
-import bcrypt
 
-def _hash(password: str) -> str:
-    return bcrypt.hashpw(password.encode(), bcrypt.gensalt()).decode()
-
+_hash = HashingService()
 user_bp = Blueprint('user_bp', __name__)
 
 @user_bp.route('/users', methods=['GET'])
@@ -25,7 +23,7 @@ def get_all_users():
 @user_bp.route('/users', methods=['POST'])
 def create_user():
     data = request.json
-    hashed_password = _hash(data['password'])
+    hashed_password = _hash.hash_bcrypt(data['password'])
     new_user = Users(
         username=data['username'],
         first_name=data['first_name'],
@@ -51,6 +49,19 @@ def get_user(user_id):
         'created_at': user.created_at
     })
 
+@user_bp.route('/users/<string:username>', methods=['GET'])
+def get_user_by_username(username):
+    user = Users.query.filter_by(username=username).first_or_404()
+    return jsonify({
+        'id': user.id,
+        'username': user.username,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'email': user.email,
+        'role': user.role,
+        'created_at': user.created_at
+    })
+
 @user_bp.route('/users/<int:user_id>', methods=['PUT'])
 def update_user(user_id):
     data = request.json
@@ -59,7 +70,7 @@ def update_user(user_id):
     user.first_name = data.get('first_name', user.first_name)
     user.last_name = data.get('last_name', user.last_name)
     if 'password' in data:
-        user.password_hash = _hash(data['password'])
+        user.password_hash = _hash.hash_bcrypt(data['password'])
     user.email = data.get('email', user.email)
     user.role = data.get('role', user.role)
     db.session.commit()

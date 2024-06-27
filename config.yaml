@@ -1,8 +1,0 @@
-credentials:
-cookie:
-  expiry_days: 0
-  key: "111111111111" # Must be string
-  name: hellomouad
-pre-authorized:
-  emails:
-  # - melsby@gmail.com

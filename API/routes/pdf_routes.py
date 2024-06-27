@@ -17,7 +17,6 @@ def get_all_pdfs():
         pdfs_list.append(pdf_data)
     return jsonify(pdfs_list)
 
-
 @pdf_bp.route('/pdfs', methods=['POST'])
 def upload_pdf():
     data = request.json
