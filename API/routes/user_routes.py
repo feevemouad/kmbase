@@ -11,11 +11,14 @@ def get_all_users():
     users_list = []
     for user in users:
         user_data = {
+            'id': user.id,
+            'username': user.username,
             'first_name': user.first_name,
             'last_name': user.last_name,
-            'username': user.username,
+            'email': user.email,
             'password_hash': user.password_hash,
-            'email': user.email
+            'role': user.role,
+            'created_at': user.created_at
         }
         users_list.append(user_data)
     return jsonify(users_list)
@@ -32,9 +35,13 @@ def create_user():
         email=data['email'],
         role=data['role']
     )
-    db.session.add(new_user)
-    db.session.commit()
-    return jsonify({"message": "User created successfully!"}), 201
+    try:
+        db.session.add(new_user)
+        db.session.commit()
+        return jsonify({"message": "User created successfully!"}), 201
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"message": "Error creating user, user may already exist", "error": str(e)}), 400
 
 @user_bp.route('/users/<int:user_id>', methods=['GET'])
 def get_user(user_id):
@@ -66,13 +73,18 @@ def get_user_by_username(username):
 def update_user(user_id):
     data = request.json
     user = Users.query.get_or_404(user_id)
-    user.username = data.get('username', user.username)
-    user.first_name = data.get('first_name', user.first_name)
-    user.last_name = data.get('last_name', user.last_name)
+    if 'username' in data:
+        user.username = data.get('username', user.username)
+    if 'first_name' in data:     
+        user.first_name = data.get('first_name', user.first_name)
+    if 'last_name' in data:       
+        user.last_name = data.get('last_name', user.last_name)
     if 'password' in data:
         user.password_hash = _hash.hash_bcrypt(data['password'])
-    user.email = data.get('email', user.email)
-    user.role = data.get('role', user.role)
+    if 'email' in data:       
+        user.email = data.get('email', user.email)
+    if 'role' in data:       
+        user.role = data.get('role', user.role)
     db.session.commit()
     return jsonify({"message": "User updated successfully!"})
 

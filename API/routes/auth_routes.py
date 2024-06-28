@@ -36,50 +36,50 @@ def log_in():
     return jsonify({"token": token}), 200
 
 
-@auth_bp.route('/auth/register', methods=["POST"])
-def register():
-    data = request.json
-    username = data.get('username')
-    password = data.get('password')
-    first_name = data.get('first_name')
-    last_name = data.get('last_name')
-    email = data.get('email')
-    role = data.get('role')
+# @auth_bp.route('/auth/register', methods=["POST"])
+# def register():
+#     data = request.json
+#     username = data.get('username')
+#     password = data.get('password')
+#     first_name = data.get('first_name')
+#     last_name = data.get('last_name')
+#     email = data.get('email')
+#     role = data.get('role')
 
-    # Check if all required fields are provided
-    if not all([username, password, first_name, last_name, email, role]):
-        return jsonify({"error": "All fields are required"}), 400
+#     # Check if all required fields are provided
+#     if not all([username, password, first_name, last_name, email, role]):
+#         return jsonify({"error": "All fields are required"}), 400
 
-    # Check if the registration key is correct
-    if request.headers.get("register_key") != register_key:
-        return jsonify({"error": "Unauthorized registration attempt"}), 401
+#     # Check if the registration key is correct
+#     if request.headers.get("register_key") != register_key:
+#         return jsonify({"error": "Unauthorized registration attempt"}), 401
 
-    # Check if the username already exists
-    existing_user = Users.query.filter_by(username=username).first()
-    if existing_user:
-        return jsonify({"error": "Username already exists"}), 409
+#     # Check if the username already exists
+#     existing_user = Users.query.filter_by(username=username).first()
+#     if existing_user:
+#         return jsonify({"error": "Username already exists"}), 409
 
-    # Hash the password
-    password_hash = _hash.hash_bcrypt(password)
+#     # Hash the password
+#     password_hash = _hash.hash_bcrypt(password)
 
-    # Create new user
-    new_user = Users(
-        username=username,
-        password_hash=password_hash,
-        first_name=first_name,
-        last_name=last_name,
-        email=email,
-        role=role
-    )
+#     # Create new user
+#     new_user = Users(
+#         username=username,
+#         password_hash=password_hash,
+#         first_name=first_name,
+#         last_name=last_name,
+#         email=email,
+#         role=role
+#     )
 
-    # Add and commit the new user to the database
-    try:
-        db.session.add(new_user)
-        db.session.commit()
-        return jsonify({"message": "User account created successfully"}), 201
-    except Exception as e:
-        db.session.rollback()
-        return jsonify({"error": "Failed to create user account"}), 500
+#     # Add and commit the new user to the database
+#     try:
+#         db.session.add(new_user)
+#         db.session.commit()
+#         return jsonify({"message": "User account created successfully"}), 201
+#     except Exception as e:
+#         db.session.rollback()
+#         return jsonify({"error": "Failed to create user account"}), 500
 
 @auth_bp.route('auth/is_logged_in', methods=['GET'])
 def is_logged_in():

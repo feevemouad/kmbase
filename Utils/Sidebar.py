@@ -1,11 +1,18 @@
 import streamlit as st
 from streamlit_option_menu import option_menu
-from Views import home, my_docs, acc_settings 
+from Utils.Logout import Logout
 import base64
 
 class Sidebar:
     def __init__(self, api):
-        self.render_sidebar(api)
+        self.api = api
+        if not "userdata" in st.session_state :
+            st.session_state["userdata"] = self.api.get_user_by_username(st.session_state["username"])
+        self.navigation = ["Home", "My Documents", "Account Settings"]
+        self.nav_icons = ["house", "file-earmark-text", "gear"]
+        if st.session_state["userdata"]["role"] == "Admin":
+            self.navigation.append("User Management")
+            self.nav_icons.append("people")
         st.markdown(
             """
             <style>
@@ -17,11 +24,9 @@ class Sidebar:
             unsafe_allow_html=True,
         )
         
-    def render_sidebar(self, api):
-        if not "userdata" in st.session_state :
-            st.session_state["userdata"] = api.get_user_by_username(st.session_state["username"])
+    def render_sidebar(self):
         with st.sidebar:
-            # Assuming st.session_state["userdata"] contains user information
+            Logout()
             self.affiche_profile_and_name()
             # Search bar for PDFs
             st.subheader("Search PDFs")
@@ -30,8 +35,8 @@ class Sidebar:
             st.header("Navigation")
             selected = option_menu(
                 menu_title=None,
-                options=["Home", "My Documents", "Account Settings"],
-                icons=["house", "file-earmark-text", "gear"],  # Optional: add icons to the options
+                options=self.navigation,
+                icons=self.nav_icons,  # Optional: add icons to the options
                 menu_icon="cast",  # Optional: set the menu icon
                 default_index=0,  # Optional: set the default selected option
                 )            
@@ -42,14 +47,13 @@ class Sidebar:
                     # Ensure the uploaded_file and pdf_description are passed correctly
                     self.upload_pdf(uploaded_file, pdf_description)
 
-        self.navigate_to_page(selected)
-        
+        return selected        
     def affiche_profile_and_name(self):
         user_data = st.session_state.get("userdata", {})
         last_name = user_data.get("last_name", "")
         first_name = user_data.get("first_name", "")
         
-        LOGO_IMAGE = "im/profile.png"
+        LOGO_IMAGE = "Images/profile.png"
         
         st.markdown(
             """
@@ -88,7 +92,6 @@ class Sidebar:
             unsafe_allow_html=True
         )
 
-
     def upload_pdf(self, uploaded_file, pdf_description):
         if uploaded_file:
             # Process the uploaded PDF file and save it with the description
@@ -96,14 +99,4 @@ class Sidebar:
             st.sidebar.success(f"Uploaded {uploaded_file.name} with description: {pdf_description}")
         else:
             st.sidebar.error("No file uploaded")
-
-    def navigate_to_page(self, page):
-        if page == "Home":
-            home.create_page()
-        elif page == "My Documents":
-            my_docs.create_page()
-        elif page == "Account Settings":
-            acc_settings.create_page()
-        else:
-            st.error("Unknown page")
             

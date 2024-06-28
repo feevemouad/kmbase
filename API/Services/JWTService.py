@@ -5,10 +5,10 @@ from typing import Union
 
 
 class JWTService:
-    expires_in_seconds = 60
+    expires_in_seconds = 1800 # 30 minutes # TODO: change to 30 days or something
     signing_algorithm = "HS256"
 
-    def __init__(self, signing_key: str, expires_in_seconds: int = 60):
+    def __init__(self, signing_key: str, expires_in_seconds: int = 1800):
         self.signing_key = signing_key
         self.expires_in_seconds = expires_in_seconds
 

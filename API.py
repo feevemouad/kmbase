@@ -31,7 +31,10 @@ class API:
     def get_user(self, user_id):
         try:
             response = requests.get(f"{self.base_url}/users/{user_id}", headers=self.base_headers)
-            return response.json()
+            if response.status_code == 200:
+                return response.json()
+            if response.status_code == 404:
+                return {"message":"User Not Found", "status_code":404}
         except:
             return None
 
@@ -42,8 +45,8 @@ class API:
         except :
             return None
 
-
     def update_user(self, user_id, data):
+        
         try:
             response = requests.put(f"{self.base_url}/users/{user_id}", json=data, headers=self.base_headers)
             return response.json()
@@ -122,17 +125,21 @@ class API:
         except:
             return None
         
-    def register(self, username, password, first_name, last_name, email, role ):
-        try:
-            response = requests.post(f"{self.base_url}/auth/register", json={
-                "username": username,
-                "password": password
-            })
-            body = response.json()
-            token = body.get("token") if isinstance(body, dict) else None
-            return token
-        except:
-            return None
+    # def register(self, username, password, first_name, last_name, email, role ):
+    #     try:
+    #         response = requests.post(f"{self.base_url}/auth/register", json={
+    #             "username": username,
+    #             "password": password,
+    #             "first_name": first_name,
+    #             "last_name": last_name,
+    #             "email": email, 
+    #             "role": role
+    #         })
+    #         body = response.json()
+    #         token = body.get("token") if isinstance(body, dict) else None
+    #         return token
+    #     except:
+    #         return None
 
     def is_logged_in(self):
         try:

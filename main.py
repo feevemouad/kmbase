@@ -4,24 +4,34 @@ import streamlit as st
 from Utils.Login import Login
 from Utils.Logout import Logout
 from Utils.Sidebar import Sidebar
+from Views import home, my_docs, acc_settings, user_management
 from API import API 
 
 def main_app(api):
-    print(st.session_state["token"]) #TODO
-    Sidebar(api)
-    if st.button("Fetch Documents"):
-        documents = api.get_all_users()
-        if documents:
-            st.json(documents)
-        else:
-            st.error("Failed to fetch documents.")
-
-    # Add more functionalities here
-    Logout()
+    st.info("**token:** \n"+st.session_state["token"])
     
+    sidebar = Sidebar(api)
+    
+    page = sidebar.render_sidebar()
+    
+    if page == "Home":
+        home.create_page()
+        
+    elif page == "My Documents":
+        my_docs.create_page()
+        
+    elif page == "Account Settings":
+        acc_settings.create_page()
+        
+    elif page == "User Management":
+        user_management.create_page(api)
+        
+    else:
+        st.error("Unknown page")
+
 
 def main():
-    st.set_page_config(page_title="KM base", page_icon=r"im/favicon.ico")
+    st.set_page_config(page_title="KM base", page_icon=r"Images/favicon.ico", layout="wide")
     if 'token' not in st.session_state:
         api = API("http://127.0.0.1:5000/api", None)
         Login(api.login)

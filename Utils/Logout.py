@@ -3,5 +3,7 @@ import streamlit as st
 class Logout:
     def __init__(self):
         if st.button("Logout"):
-            st.session_state.pop('token', None)
+            keys = list(st.session_state.keys())
+            for key in keys:
+                st.session_state.pop(key)
             st.rerun()

@@ -5,6 +5,5 @@ API/__pycache__
 .vscode/
 # Virtual Environment
 venv/
-.streamlit/
 test.ipynb
 test.py
