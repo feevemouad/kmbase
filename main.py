@@ -8,20 +8,20 @@ from Views import home, my_docs, acc_settings, user_management
 from API import API 
 
 def main_app(api):
-    st.info("**token:** \n"+st.session_state["token"])
+    print("**token:** \n"+st.session_state["token"])
     
     sidebar = Sidebar(api)
     
     page = sidebar.render_sidebar()
     
     if page == "Home":
-        home.create_page()
+        home.create_page(api)
         
     elif page == "My Documents":
-        my_docs.create_page()
+        my_docs.create_page(api)
         
     elif page == "Account Settings":
-        acc_settings.create_page()
+        acc_settings.create_page(api)
         
     elif page == "User Management":
         user_management.create_page(api)

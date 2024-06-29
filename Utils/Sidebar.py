@@ -48,6 +48,7 @@ class Sidebar:
                     self.upload_pdf(uploaded_file, pdf_description)
 
         return selected        
+    
     def affiche_profile_and_name(self):
         user_data = st.session_state.get("userdata", {})
         last_name = user_data.get("last_name", "")

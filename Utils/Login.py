@@ -10,7 +10,7 @@ class Login:
             st.header("Login")
             username = st.text_input("Username")
             password = st.text_input("Password", type="password")
-            if st.button("Login"):
+            if st.button("Login", type = "primary"):
                 if username and password:
                     token = on_login(username, password)
                     if token:
