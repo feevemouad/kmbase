@@ -68,6 +68,13 @@ class API:
         except:
             return None
 
+    def get_all_pdfs_with_description(self):
+        try:
+            response = requests.get(f"{self.base_url}/pdfs/pdfsxdescriptions", headers=self.base_headers)
+            return response.json()
+        except:
+            return None
+
     def upload_pdf(self, user_id, file_name, file_path):
         try:
             data = {
@@ -78,6 +85,25 @@ class API:
             response = requests.post(f"{self.base_url}/pdfs", json=data, headers=self.base_headers)
             return response.json()
         except:
+            return None
+
+    def upload_pdf_with_description(self, user_id, file_name, file_path, description, file_size):
+        upload_response = self.upload_pdf(user_id, file_name, file_path)
+        
+        if upload_response and 'pdf_id' in upload_response:
+            pdf_id = upload_response['pdf_id']
+            metadata_response = self.add_pdf_metadata(pdf_id, description, file_size)
+            
+            if metadata_response:
+                return {
+                    "upload_response": upload_response,
+                    "metadata_response": metadata_response
+                }
+            else:
+                print("Failed to add metadata")
+                return {"upload_response": upload_response}
+        else:
+            print("Failed to upload PDF")
             return None
 
     def get_pdf(self, pdf_id):

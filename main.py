@@ -4,7 +4,7 @@ import streamlit as st
 from Utils.Login import Login
 from Utils.Logout import Logout
 from Utils.Sidebar import Sidebar
-from Views import home, my_docs, acc_settings, user_management
+from Views import home, my_docs, file_upload, acc_settings, user_management
 from API import API 
 
 def main_app(api):
@@ -25,6 +25,9 @@ def main_app(api):
         
     elif page == "User Management":
         user_management.create_page(api)
+          
+    elif page == "Upload Files":
+        file_upload.create_page(api)
         
     else:
         st.error("Unknown page")

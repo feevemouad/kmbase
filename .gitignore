@@ -4,6 +4,7 @@
 API/__pycache__
 .vscode/
 # Virtual Environment
+Storage/*
 venv/
 test.ipynb
 test.py

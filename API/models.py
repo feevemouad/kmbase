@@ -33,4 +33,4 @@ class PDFMetadata(db.Model):
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 Users.pdfs = db.relationship('PDFs', backref='user', lazy=True)
-PDFs.metadata = db.relationship('PDFMetadata', backref='pdf', lazy=True)
+PDFs.metadata = db.relationship('PDFMetadata', backref='pdf', lazy=True, cascade='all, delete-orphan')

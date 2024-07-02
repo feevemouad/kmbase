@@ -1,5 +1,6 @@
 from flask import Blueprint, request, jsonify
 from models import db, PDFs, PDFMetadata
+from sqlalchemy.orm import joinedload
 
 pdf_bp = Blueprint('pdf_bp', __name__)
 
@@ -27,11 +28,41 @@ def upload_pdf():
     )
     db.session.add(new_pdf)
     db.session.commit()
-    return jsonify({"message": "PDF uploaded successfully!"}), 201
+    return jsonify({"message": "PDF uploaded successfully!", "pdf_id": new_pdf.id}), 201
 
+@pdf_bp.route("/pdfs/pdfsxdescriptions", methods=["GET"])
+def get_pdfs_with_descriptions():
+    try:
+        
+        # Query using SQLAlchemy
+        pdfs_with_metadata = (
+            PDFs.query
+            .options(joinedload(PDFs.metadata))
+            .order_by(PDFs.uploaded_at.desc())
+            .all()
+        )
+        
+        # Format the results
+        pdfs_with_descriptions = []
+        for pdf in pdfs_with_metadata:
+            pdf_data = {
+                'id': pdf.id,
+                'file_name': pdf.file_name,
+                'file_path': pdf.file_path,
+                'uploaded_at': pdf.uploaded_at.isoformat(),
+                'description': pdf.metadata[0].description if pdf.metadata else None,
+                'file_size': pdf.metadata[0].file_size if pdf.metadata else None
+            }
+            pdfs_with_descriptions.append(pdf_data)
+        
+        return jsonify(pdfs_with_descriptions), 200
+    
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500    
+    
 @pdf_bp.route('/pdfs/<int:pdf_id>', methods=['GET'])
 def get_pdf(pdf_id):
-    pdf = PDFs.query.get_or_404(pdf_id)
+    pdfs = PDFs.query.get_or_404(pdf_id)
     return jsonify({
         'id': pdfs.id,
         'user_id': pdfs.user_id,

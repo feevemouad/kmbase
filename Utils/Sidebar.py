@@ -8,8 +8,8 @@ class Sidebar:
         self.api = api
         if not "userdata" in st.session_state :
             st.session_state["userdata"] = self.api.get_user_by_username(st.session_state["username"])
-        self.navigation = ["Home", "My Documents", "Account Settings"]
-        self.nav_icons = ["house", "file-earmark-text", "gear"]
+        self.navigation = ["Home", "My Documents", "Upload Files", "Account Settings"]
+        self.nav_icons = ["house", "file-earmark-text", "file-earmark-arrow-up", "gear"]
         if st.session_state["userdata"]["role"] == "Admin":
             self.navigation.append("User Management")
             self.nav_icons.append("people")
@@ -37,15 +37,15 @@ class Sidebar:
                 menu_title=None,
                 options=self.navigation,
                 icons=self.nav_icons,  # Optional: add icons to the options
-                menu_icon="cast",  # Optional: set the menu icon
+                # menu_icon="cast",  # Optional: set the menu icon
                 default_index=0,  # Optional: set the default selected option
                 )            
-            with st.expander("Upload File", expanded=False):
-                uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
-                pdf_description = st.text_area("Description")
-                if st.button("Upload"):
-                    # Ensure the uploaded_file and pdf_description are passed correctly
-                    self.upload_pdf(uploaded_file, pdf_description)
+            # with st.expander("Upload File", expanded=False):
+            #     uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
+            #     pdf_description = st.text_area("Description")
+            #     if st.button("Upload"):
+            #         # Ensure the uploaded_file and pdf_description are passed correctly
+            #         self.upload_pdf(uploaded_file, pdf_description)
 
         return selected        
     
@@ -92,12 +92,3 @@ class Sidebar:
             """,
             unsafe_allow_html=True
         )
-
-    def upload_pdf(self, uploaded_file, pdf_description):
-        if uploaded_file:
-            # Process the uploaded PDF file and save it with the description
-            # For now, we just print the details
-            st.sidebar.success(f"Uploaded {uploaded_file.name} with description: {pdf_description}")
-        else:
-            st.sidebar.error("No file uploaded")
-            
