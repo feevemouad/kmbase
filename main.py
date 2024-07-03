@@ -2,14 +2,13 @@ import base64
 import json
 import streamlit as st
 from Utils.Login import Login
-from Utils.Logout import Logout
 from Utils.Sidebar import Sidebar
 from Views import home, my_docs, file_upload, acc_settings, user_management
 from API import API 
 
 def main_app(api):
+    # st.write(st.session_state)
     print("**token:** \n"+st.session_state["token"])
-    
     sidebar = Sidebar(api)
     
     page = sidebar.render_sidebar()

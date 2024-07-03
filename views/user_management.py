@@ -52,7 +52,7 @@ def register_users(api):
 def view_users(api):
     # View Users
     users = api.get_all_users()
-    df = pd.DataFrame(users, columns=["id", "first_name", "last_name", "username", "email", "password_hash", "role", "created_at"])
+    df = pd.DataFrame(users, columns=["id", "first_name", "last_name", "username", "email", "role", "created_at"])
     _,col2,_ = st.columns([0.05, 0.9, 0.05])
     with col2:
         st.dataframe(df, hide_index=True)

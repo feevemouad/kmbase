@@ -23,10 +23,10 @@ def create_page(api):
             col1, col2,     _, col3, col4 = st.columns([0.2,0.225,0.15,0.225,0.2])
             
             with col2:
-                update_button = st.form_submit_button("Update Account", type = "primary")
+                update_button = st.form_submit_button("Update Account")
             
             with col3:
-                delete_button = st.form_submit_button("Delete Account")
+                delete_button = st.form_submit_button("Delete Account", type = "primary")
 
         # Handle form submission
         if update_button:

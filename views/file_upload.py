@@ -1,5 +1,5 @@
-import streamlit as st
 import tempfile
+import streamlit as st
 import shutil
 import time
 import os
@@ -39,9 +39,10 @@ def create_page(api):
                     try:
                         upload_pdf(api, uploaded_file, pdf_description)
                         st.success(f"Successfully uploaded {uploaded_file.name}")
+                        st.session_state["file_uploaded"] = True
                         # Clear the form after successful upload
                         st.empty()
-                        st.experimental_rerun()
+                        st.rerun()
                     except Exception as e:
                         st.error(f"An error occurred while uploading: {str(e)}")
                 else:
@@ -85,7 +86,7 @@ def upload_pdf(api, uploaded_file, pdf_description):
 
             if ("upload_response" in response) and ("metadata_response" in response) and (response["upload_response"]["message"] == "PDF uploaded successfully!") and (response["metadata_response"]["message"] == "PDF metadata added successfully!"):
                 st.success(f"Uploaded {file_name} successfully!")
-                time.sleep(0.5)
+                time.sleep(1)
             else:
                 st.error("Failed to upload the PDF. Please try again.")
     

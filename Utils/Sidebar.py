@@ -63,7 +63,8 @@ class Sidebar:
                 display: flex;
                 align-items: center;
                 padding: 10px;
-                background-color: #c92299;
+                # background-color: #c92299;
+                background-color: #ffffff;
                 border-radius: 5px;
                 margin-bottom: 20px;
             }
@@ -76,7 +77,8 @@ class Sidebar:
             .logo-text {
                 font-weight: bold;
                 font-size: 24px;
-                color: #ffffff;
+                # color: #ffffff;
+                color: #c92299;
             }
             </style>
             """,

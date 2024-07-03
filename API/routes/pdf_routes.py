@@ -51,6 +51,7 @@ def get_pdfs_with_descriptions():
                 'file_path': pdf.file_path,
                 'uploaded_at': pdf.uploaded_at.isoformat(),
                 'description': pdf.metadata[0].description if pdf.metadata else None,
+                'user_id': pdf.user_id,
                 'file_size': pdf.metadata[0].file_size if pdf.metadata else None
             }
             pdfs_with_descriptions.append(pdf_data)
@@ -100,3 +101,33 @@ def delete_pdf(pdf_id):
     db.session.delete(pdf)
     db.session.commit()
     return jsonify({"message": "PDF deleted successfully!"})
+
+@pdf_bp.route('/pdfs/<int:pdf_id>/metadata/edit', methods=['PUT'])
+def edit_pdf_metadata(pdf_id):
+    data = request.json
+    if not data:
+        return jsonify({"error": "No data provided"}), 400
+    
+    pdf = PDFs.query.get(pdf_id)
+    try:
+        # Update PDF file name
+        if 'file_name' in data:
+            pdf.file_name = data['file_name']
+        
+        # Update or create metadata
+        metadata = PDFMetadata.query.filter_by(pdf_id=pdf_id).first()
+        if 'description' in data:
+            metadata.description = data['description']
+
+        db.session.commit()
+        
+        return jsonify({
+            "message": "PDF metadata updated successfully",
+            "pdf_id": pdf_id,
+            "file_name": pdf.file_name,
+            "description": metadata.description if metadata else new_metadata.description
+        }), 200
+    
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": str(e)}), 500

@@ -131,6 +131,18 @@ class API:
         except:
             return None
 
+    def edit_pdf_metadata(self, pdf_id, new_file_name, new_description):
+        try:
+            data = {
+                "file_name": new_file_name,
+                "description": new_description
+            }
+            response = requests.put(f"{self.base_url}/pdfs/{pdf_id}/metadata/edit", json=data, headers=self.base_headers)
+            return response.json()
+        except:
+            return None
+
+
     def delete_pdf(self, pdf_id):
         try:
             response = requests.delete(f"{self.base_url}/pdfs/{pdf_id}", headers=self.base_headers)

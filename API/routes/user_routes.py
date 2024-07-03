@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from Services.HashingService import HashingService
-from models import db, Users
+from models import db, Users, PDFs
 
 _hash = HashingService()
 user_bp = Blueprint('user_bp', __name__)
@@ -90,7 +90,10 @@ def update_user(user_id):
 
 @user_bp.route('/users/<int:user_id>', methods=['DELETE'])
 def delete_user(user_id):
-    user = Users.query.get_or_404(user_id)
-    db.session.delete(user)
-    db.session.commit()
-    return jsonify({"message": "User deleted successfully!"})
+    user = Users.query.get(user_id)
+    if user : 
+        PDFs.query.filter_by(user_id=user_id).update({'user_id': 3})
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({"message": "User deleted successfully!"})
+    return jsonify({"message": "User not found!"}), 404
