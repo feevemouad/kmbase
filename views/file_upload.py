@@ -1,6 +1,6 @@
 import tempfile
 import streamlit as st
-import shutil
+from minio.error import S3Error
 import time
 import os
 
@@ -64,22 +64,18 @@ def upload_pdf(api, uploaded_file, pdf_description):
             file_name = uploaded_file.name
             file_size = uploaded_file.size  # Size in bytes
 
-            # Get the current user's ID 
+            # Get the current user's ID
             user_id = st.session_state["userdata"]["id"]
 
             # Define the path to store the file
             # This should be a path to a server or wherever we're storing the PDFs
-            storage_path = os.path.join(r"""C:\\Users\\MOUAD AHM\Desktop\\kM\Storage""", file_name)
+            object_name = api.upload_pdf_to_minio(tmp_file_path, file_name, file_size)
 
-            # Copy the temporary file to the storage location
-            os.makedirs(os.path.dirname(storage_path), exist_ok=True)
-            shutil.copy2(tmp_file_path, storage_path)
-            #
             # Upload the PDF using the API
             response = api.upload_pdf_with_description(
                 user_id, 
                 file_name, 
-                storage_path, 
+                object_name, 
                 pdf_description, 
                 file_size
             )
@@ -89,13 +85,16 @@ def upload_pdf(api, uploaded_file, pdf_description):
                 time.sleep(1)
             else:
                 st.error("Failed to upload the PDF. Please try again.")
-    
+                
+        except S3Error as e:
+            st.error(f"Failed to upload {file_name} to MinIO: {e}")
+
         except Exception as e:
-            st.sidebar.error(f"An error occurred while uploading the PDF: {str(e)}")
+            st.error(f"An error occurred while uploading the PDF: {str(e)}")
         finally:
             # Ensure the temporary file is removed
             if 'tmp_file_path' in locals() and os.path.exists(tmp_file_path):
                 os.unlink(tmp_file_path)
                 
     else:
-        st.sidebar.error("No file uploaded")
+        st.error("No file uploaded")

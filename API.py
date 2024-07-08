@@ -1,4 +1,7 @@
 import requests
+from minio import Minio
+from minio.error import S3Error
+import configparser
 
 class API:
     def __init__(self, base_url: str, token: str):
@@ -142,7 +145,6 @@ class API:
         except:
             return None
 
-
     def delete_pdf(self, pdf_id):
         try:
             response = requests.delete(f"{self.base_url}/pdfs/{pdf_id}", headers=self.base_headers)
@@ -150,7 +152,49 @@ class API:
         except:
             return None
 
-    # You can add authentication methods here if needed, similar to your example
+    def initialize_minio_client(self):
+        config = configparser.ConfigParser(allow_no_value=True) 
+        config.read(".dev\config.ini")
+        return Minio(config.get("minio","endpoint"),
+            config.get("minio","access_key"),
+            config.get("minio","secret_key"),
+            config.get("minio","session_token"), 
+            config.getboolean("minio","secure"),
+            config.get("minio","region"))
+
+    def upload_pdf_to_minio(self, tmp_file_path, file_name, file_size):
+        
+        client = self.initialize_minio_client()
+        bucket_name = "kmbase"
+        with open(tmp_file_path, 'rb') as file_data:
+            client.put_object(
+                bucket_name,
+                file_name,
+                data=file_data,
+                length=file_size,
+                content_type='application/pdf'
+            )
+        return file_name  # Return the object name
+
+    def delete_file_from_minio(self, file_path):
+        """Deletes a file from MinIO storage."""
+        try:
+            # Initialize MinIO client
+            minio_client = self.initialize_minio_client()
+            bucket_name = "kmbase"
+
+            # Remove the object from MinIO
+            minio_client.remove_object(bucket_name, file_path)
+            print(f"File '{file_path}' deleted successfully from MinIO.")
+            return True
+        except S3Error as e:
+            print(f"Failed to delete '{file_path}' from MinIO: {e}")
+            return False
+        except Exception as e:
+            print(f"Error deleting file from MinIO: {e}")
+            return False
+
+    # Auth-related methods
     def login(self, username, password):
         try:
             response = requests.post(f"{self.base_url}/auth/login", json={

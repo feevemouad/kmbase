@@ -1,7 +1,6 @@
 import time
 import streamlit as st
-import os
-import base64
+from datetime import timedelta
 
 def create_page(api):
  
@@ -17,7 +16,7 @@ def create_page(api):
         display_documents(api, documents)
         
     elif st.session_state["pdf_path"] != None :
-        show_pdf(st.session_state["pdf_path"])
+        show_pdf(api, st.session_state["pdf_path"])
         
     elif st.session_state["editing"] != None :
         edit_pdf_form(api, st.session_state["editing"])
@@ -39,7 +38,6 @@ def get_all_pdfs(api):
         st.session_state["file_edited"] = False
         st.session_state["pdfs"] = api.get_all_pdfs_with_description()
         return st.session_state["pdfs"]
-
 
     if "pdfs" not in st.session_state:
         st.session_state["pdfs"] = api.get_all_pdfs_with_description()
@@ -113,10 +111,12 @@ def delete_pdf(api, index, file_path):
     try : 
         response = api.delete_pdf(index)
         if response["message"] == "PDF deleted successfully!" : 
-            delete_file_from_storage(file_path)
-            st.success("pdf deleted successfully")
-            time.sleep(1)
-            return True
+            res = api.delete_file_from_minio(file_path)
+            if res == True : 
+                st.success("pdf deleted successfully")
+                time.sleep(1)
+                return True
+            else: return False
         
         else : 
             st.error(f"Error deleting PDF")
@@ -126,23 +126,15 @@ def delete_pdf(api, index, file_path):
         st.error(f"Error deleting PDF: {e}")
         return False 
     
-def delete_file_from_storage(file_path):
-    """Deletes a file at the specified path."""
-    try:
-        os.remove(file_path)
-    except FileNotFoundError:
-        print(f"File '{file_path}' not found.")
-    except PermissionError:
-        print(f"Permission denied to delete '{file_path}'.")
-    except Exception as e:
-        print(f"Error deleting file: {e}")
-    
-def show_pdf(path):
+def show_pdf(api, object_name):
     if st.button("Close", type="primary") : 
         st.session_state["pdf_path"] = None
         st.rerun()
-    with open(path, "rb") as f:
-        base64_pdf = base64.b64encode(f.read()).decode('utf-8')
-    pdf_display = f'<iframe src="data:application/pdf;base64,{base64_pdf}" width="1000" height="1000" type="application/pdf"></iframe>'
-    st.markdown(pdf_display, unsafe_allow_html=True)
-
+        
+    client = api.initialize_minio_client()
+    
+    bucket_name = "kmbase"
+    
+    url = client.presigned_get_object(bucket_name, object_name, expires=timedelta(days=0, seconds=0, microseconds=0, milliseconds=0, minutes=0, hours=1, weeks=0))  # URL expires in 1 hour
+    
+    st.markdown(f'<iframe src="{url}" width="800" height="600"></iframe>', unsafe_allow_html=True)
