@@ -1,0 +1,26 @@
+jwt_service:
+  jwt_secret: "kmbase"
+  
+minio:
+  endpoint: 'localhost:9000'
+  access_key: 'kmbase'
+  secret_key: 'kmbasepass'
+  secure: false
+  docs_bucket: 'kmbase'
+
+text_chunker:
+  chunk_size: 2500
+  overlap: 300
+
+embedding_model:
+  endpoint: "http://localhost:11434/api/embeddings" 
+  model_name: "nomic-embed-text"  
+  dimension: 768 
+
+chat_model:
+  endpoint: "http://localhost:11434/api/generate"
+  model_name: "llama3"
+  stream: False
+
+vector_store:
+  dimension: 768  

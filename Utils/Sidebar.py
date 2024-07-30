@@ -8,8 +8,10 @@ class Sidebar:
         self.api = api
         if not "userdata" in st.session_state :
             st.session_state["userdata"] = self.api.get_user_by_username(st.session_state["username"])
-        self.navigation = ["Home", "My Documents", "Upload Files", "Account Settings"]
-        self.nav_icons = ["house", "file-earmark-text", "file-earmark-arrow-up", "gear"]
+        # self.navigation = ["Assistant","Home", "My Documents", "Upload Files", "Account Settings"]
+        self.navigation = ["Home", "Documents", "Upload Files", "Account Settings"]
+        # self.nav_icons = ["alexa","house", "file-earmark-text", "file-earmark-arrow-up", "gear"]
+        self.nav_icons = ["alexa", "file-earmark-text", "file-earmark-arrow-up", "gear"]
         if st.session_state["userdata"]["role"] == "Admin":
             self.navigation.append("User Management")
             self.nav_icons.append("people")
@@ -25,12 +27,11 @@ class Sidebar:
         )
         
     def render_sidebar(self):
+                
         with st.sidebar:
             Logout()
             self.affiche_profile_and_name()
-            # Search bar for PDFs
-            st.subheader("Search PDFs")
-            search_query = st.text_input("Search PDFs")
+          
             # Navigation section using option_menu inside the sidebar
             st.header("Navigation")
             selected = option_menu(
@@ -38,16 +39,10 @@ class Sidebar:
                 options=self.navigation,
                 icons=self.nav_icons,  # Optional: add icons to the options
                 # menu_icon="cast",  # Optional: set the menu icon
-                default_index=0,  # Optional: set the default selected option
+                default_index=self.get_default_index(),  # Optional: set the default selected option
                 )            
-            # with st.expander("Upload File", expanded=False):
-            #     uploaded_file = st.file_uploader("Choose a PDF file", type="pdf")
-            #     pdf_description = st.text_area("Description")
-            #     if st.button("Upload"):
-            #         # Ensure the uploaded_file and pdf_description are passed correctly
-            #         self.upload_pdf(uploaded_file, pdf_description)
 
-        return selected        
+        return selected
     
     def affiche_profile_and_name(self):
         user_data = st.session_state.get("userdata", {})
@@ -94,3 +89,18 @@ class Sidebar:
             """,
             unsafe_allow_html=True
         )
+
+    def get_default_index(self):
+        # Map page names to their index in the option menu
+        page_indices = {
+            "Home": 0,
+            "Documents": 1,
+            "Upload Files": 2,
+            "Account Settings": 3,
+            "User Management": 4
+        }
+        # Get the current page from session state, defaulting to "Home"
+        current_page = st.session_state.get('current_page', "Home")
+        # Return the index of the current page
+        return page_indices.get(current_page, 0)
+

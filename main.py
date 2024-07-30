@@ -1,36 +1,32 @@
-import base64
-import json
 import streamlit as st
 from Utils.Login import Login
 from Utils.Sidebar import Sidebar
-from Views import home, my_docs, file_upload, acc_settings, user_management
+from Views import chat, home, file_upload, acc_settings, user_management
 from API import API 
 
+
+
 def main_app(api):
-    # st.write(st.session_state)
-    print("**token:** \n"+st.session_state["token"])
     sidebar = Sidebar(api)
     
-    page = sidebar.render_sidebar()
+    # Use the stored page unless a new selection is made
+    selected_page = sidebar.render_sidebar()
     
-    if page == "Home":
+    # Update the current page in session state
+    st.session_state['current_page'] = selected_page
+    
+    if selected_page == "Home":
+        chat.create_page(api)
+    elif selected_page == "Documents":
         home.create_page(api)
-        
-    elif page == "My Documents":
-        my_docs.create_page(api)
-        
-    elif page == "Account Settings":
+    elif selected_page == "Account Settings":
         acc_settings.create_page(api)
-        
-    elif page == "User Management":
+    elif selected_page == "User Management":
         user_management.create_page(api)
-          
-    elif page == "Upload Files":
+    elif selected_page == "Upload Files":
         file_upload.create_page(api)
-        
     else:
         st.error("Unknown page")
-
 
 def main():
     st.set_page_config(page_title="KM base", page_icon=r"Images/favicon.ico", layout="wide")

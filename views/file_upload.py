@@ -40,8 +40,6 @@ def create_page(api):
                         upload_pdf(api, uploaded_file, pdf_description)
                         st.success(f"Successfully uploaded {uploaded_file.name}")
                         st.session_state["file_uploaded"] = True
-                        # Clear the form after successful upload
-                        st.empty()
                         st.rerun()
                     except Exception as e:
                         st.error(f"An error occurred while uploading: {str(e)}")
@@ -49,7 +47,6 @@ def create_page(api):
                     st.error("Please enter a description for the PDF.")
             else:
                 st.error("Please select a PDF file to upload.")        
-
     return True
 
 def upload_pdf(api, uploaded_file, pdf_description):
@@ -64,28 +61,38 @@ def upload_pdf(api, uploaded_file, pdf_description):
             file_name = uploaded_file.name
             file_size = uploaded_file.size  # Size in bytes
 
-            # Get the current user's ID
-            user_id = st.session_state["userdata"]["id"]
+            # verify if file with same name exists
+            file_exists = False
+            for pdf in st.session_state["pdfs"]:
+                 if file_name == pdf["file_name"] : 
+                     file_exists = True 
+                     break
+                     
+            if not file_exists:
+                # Get the current user's ID
+                user_id = st.session_state["userdata"]["id"]
 
-            # Define the path to store the file
-            # This should be a path to a server or wherever we're storing the PDFs
-            object_name = api.upload_pdf_to_minio(tmp_file_path, file_name, file_size)
+                # Define the path to store the file
+                # This should be a path to a server or wherever we're storing the PDFs
+                object_name = api.upload_pdf_to_minio(tmp_file_path, file_name, file_size)
 
-            # Upload the PDF using the API
-            response = api.upload_pdf_with_description(
-                user_id, 
-                file_name, 
-                object_name, 
-                pdf_description, 
-                file_size
-            )
+                # Upload the PDF using the API
+                response = api.upload_pdf_with_description(
+                    user_id, 
+                    file_name, 
+                    object_name, 
+                    pdf_description, 
+                    file_size
+                )
 
-            if ("upload_response" in response) and ("metadata_response" in response) and (response["upload_response"]["message"] == "PDF uploaded successfully!") and (response["metadata_response"]["message"] == "PDF metadata added successfully!"):
-                st.success(f"Uploaded {file_name} successfully!")
-                time.sleep(1)
-            else:
-                st.error("Failed to upload the PDF. Please try again.")
-                
+                if ("upload_response" in response) and ("metadata_response" in response) and (response["upload_response"]["message"] == "PDF uploaded successfully!") and (response["metadata_response"]["message"] == "PDF metadata added successfully!"):
+                    st.success(f"Uploaded {file_name} successfully!")
+                    time.sleep(1)
+                else:
+                    st.error("Failed to upload the PDF. Please try again.")
+            else : 
+                st.error("Failed to upload the PDF. Please try again with different file name.")     
+                time.sleep(1.7)   
         except S3Error as e:
             st.error(f"Failed to upload {file_name} to MinIO: {e}")
 

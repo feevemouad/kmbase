@@ -11,9 +11,9 @@ from routes.auth_routes import auth_bp
 app = Flask(__name__)
 app.config.from_object(Config)
 
-with open("../secrets.yaml") as f:
+with open("../config/config.yaml") as f:
     yaml_dict = yaml.safe_load(f)
-    jwt_secret = yaml_dict['jwt_secret']
+    jwt_secret = yaml_dict["jwt_service"]['jwt_secret']
 
 jwt_service = JWTService(jwt_secret)
 middleware = Middleware(jwt_service)

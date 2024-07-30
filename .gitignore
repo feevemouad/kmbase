@@ -5,8 +5,10 @@ Views/__pycache__
 API/__pycache__
 .vscode/
 # Virtual Environment
+mem.txt
 Storage/*
 venv/
 test.ipynb
 test.py
 .dev/
+Data/
