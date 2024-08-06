@@ -31,6 +31,15 @@ class PDFMetadata(db.Model):
     description = db.Column(db.Text, nullable=True)
     file_size = db.Column(db.Integer, nullable=False)
     uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+class Feedback(db.Model):
+    __tablename__ = "feedback"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
+    conversation = db.Column(db.JSON, nullable=False)
+    feedback_description = db.Column(db.String(500), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
 Users.pdfs = db.relationship('PDFs', backref='user', lazy=True)
 PDFs.metadata = db.relationship('PDFMetadata', backref='pdf', lazy=True, cascade='all, delete-orphan')
+Users.feedback = db.relationship('Feedback', backref='user', lazy=True)

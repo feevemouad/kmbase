@@ -2,7 +2,7 @@ import streamlit as st
 from Utils.Document import Document
 
 def create_page(api):
-    document_handler = Document(api, "config/config.yaml")
+    document_handler = Document(api, "config/config.yml")
     if not("pdf_path" in st.session_state):
         st.session_state["pdf_path"] = None
         

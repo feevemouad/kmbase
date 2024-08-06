@@ -7,11 +7,12 @@ from Services.JWTService import JWTService
 from routes.user_routes import user_bp
 from routes.pdf_routes import pdf_bp
 from routes.auth_routes import auth_bp
+from routes.feedback_routes import feedback_bp
 
 app = Flask(__name__)
 app.config.from_object(Config)
 
-with open("../config/config.yaml") as f:
+with open("../config/config.yml") as f:
     yaml_dict = yaml.safe_load(f)
     jwt_secret = yaml_dict["jwt_service"]['jwt_secret']
 
@@ -25,6 +26,7 @@ db.init_app(app)
 app.register_blueprint(user_bp, url_prefix='/api')
 app.register_blueprint(pdf_bp, url_prefix='/api')
 app.register_blueprint(auth_bp, url_prefix='/api')
+app.register_blueprint(feedback_bp, url_prefix='/api')
 
 @app.before_request
 def create_tables():

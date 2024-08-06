@@ -14,7 +14,9 @@ class Sidebar:
         self.nav_icons = ["alexa", "file-earmark-text", "file-earmark-arrow-up", "gear"]
         if st.session_state["userdata"]["role"] == "Admin":
             self.navigation.append("User Management")
+            self.navigation.append("Dashboard")
             self.nav_icons.append("people")
+            self.nav_icons.append("diagram-3")
         st.markdown(
             """
             <style>
@@ -39,9 +41,9 @@ class Sidebar:
                 options=self.navigation,
                 icons=self.nav_icons,  # Optional: add icons to the options
                 # menu_icon="cast",  # Optional: set the menu icon
-                default_index=self.get_default_index(),  # Optional: set the default selected option
+                default_index=1,  # Optional: set the default selected option
                 )            
-
+            # st.session_state['current_page'] = selected
         return selected
     
     def affiche_profile_and_name(self):

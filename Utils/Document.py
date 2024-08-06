@@ -132,7 +132,8 @@ class Document():
         if "pdfs" not in st.session_state:
             st.session_state["pdfs"] = self.api.get_all_pdfs_with_description()
         return st.session_state["pdfs"]
-
+        # return self.api.get_all_pdfs_with_description()
+        
     def search_results(self, search_query):
         json_payload = json.dumps({"query": search_query})
         headers = {"Content-Type": "application/json"}

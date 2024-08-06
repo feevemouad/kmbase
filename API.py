@@ -229,3 +229,60 @@ class API:
             return response.status_code == 201
         except:
             return False
+
+    # Feedback-related methods
+    def create_feedback(self, user_id, conversation, feedback_description):
+        try:
+            data = {
+                "user_id": user_id,
+                "conversation": conversation,
+                "feedback_description": feedback_description
+            }
+            response = requests.post(f"{self.base_url}/feedback", json=data, headers=self.base_headers)
+            return response.json()
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
+
+    def get_all_feedback(self):
+        try:
+            response = requests.get(f"{self.base_url}/feedback", headers=self.base_headers)
+            return response.json()
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
+
+    def get_feedback(self, feedback_id):
+        try:
+            response = requests.get(f"{self.base_url}/feedback/{feedback_id}", headers=self.base_headers)
+            if response.status_code == 200:
+                return response.json()
+            if response.status_code == 404:
+                return {"message": "Feedback Not Found", "status_code": 404}
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
+
+    def get_feedback_by_user(self, user_id):
+        try:
+            response = requests.get(f"{self.base_url}/feedback/user/{user_id}", headers=self.base_headers)
+            return response.json()
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
+
+    def update_feedback(self, feedback_id, data):
+        try:
+            response = requests.put(f"{self.base_url}/feedback/{feedback_id}", json=data, headers=self.base_headers)
+            return response.json()
+        except Exception as e:
+            print(f"Error: {e}")
+            return None
+
+    def delete_feedback(self, feedback_id):
+        try:
+            response = requests.delete(f"{self.base_url}/feedback/{feedback_id}", headers=self.base_headers)
+            return response.json()
+        except Exception as e:
+            print(f"Error: {e}")
+            return None

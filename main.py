@@ -1,30 +1,28 @@
 import streamlit as st
 from Utils.Login import Login
 from Utils.Sidebar import Sidebar
-from Views import chat, home, file_upload, acc_settings, user_management
+from Views import chat, docs, file_upload, acc_settings, user_management, dashboard
 from API import API 
 
 
 
 def main_app(api):
     sidebar = Sidebar(api)
-    
+
     # Use the stored page unless a new selection is made
     selected_page = sidebar.render_sidebar()
-    
-    # Update the current page in session state
-    st.session_state['current_page'] = selected_page
-    
     if selected_page == "Home":
         chat.create_page(api)
     elif selected_page == "Documents":
-        home.create_page(api)
+        docs.create_page(api)
     elif selected_page == "Account Settings":
         acc_settings.create_page(api)
     elif selected_page == "User Management":
         user_management.create_page(api)
     elif selected_page == "Upload Files":
         file_upload.create_page(api)
+    elif selected_page == "Dashboard":
+        dashboard.create_page(api)
     else:
         st.error("Unknown page")
 

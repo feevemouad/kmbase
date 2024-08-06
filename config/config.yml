@@ -9,18 +9,19 @@ minio:
   docs_bucket: 'kmbase'
 
 text_chunker:
-  chunk_size: 2500
-  overlap: 300
+  chunk_size: 1500
+  chunk_overlap: 200
 
 embedding_model:
-  endpoint: "http://localhost:11434/api/embeddings" 
-  model_name: "nomic-embed-text"  
+  endpoint: "http://localhost:11434"
+  model_name: "nomic-embed-text"
   dimension: 768 
 
 chat_model:
-  endpoint: "http://localhost:11434/api/generate"
-  model_name: "llama3"
+  endpoint: "http://localhost:11434"
+  model_name: "llama3.1"
   stream: False
 
 vector_store:
+  cache_file: '../Stubs/faiss_index_cache.pkl'
   dimension: 768  

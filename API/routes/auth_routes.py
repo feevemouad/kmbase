@@ -7,7 +7,7 @@ from models import db, Users
 _hash = HashingService()
 auth_bp = Blueprint('auth_bp', __name__)
 
-with open("../config/config.yaml") as f:
+with open("../config/config.yml") as f:
     yaml_dict = yaml.safe_load(f)
     jwt_secret = yaml_dict["jwt_service"]['jwt_secret']
     
