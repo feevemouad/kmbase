@@ -74,6 +74,6 @@ def delete_feedback(feedback_id):
         feedback = Feedback.query.get(feedback_id)
         db.session.delete(feedback)
         db.session.commit()
-        return jsonify({"message": "PDF deleted successfully!", "status": True })
+        return jsonify({"message": "feedback deleted successfully!", "status": True })
     except: 
-        return jsonify({"message": "PDF not deleted", "status": False })
+        return jsonify({"message": "feedback not deleted", "status": False })

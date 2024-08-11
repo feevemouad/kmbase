@@ -1,7 +1,7 @@
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Tuple
 import uvicorn
 import os 
 import yaml
@@ -20,8 +20,6 @@ with open(config_path, 'r') as f:
     config = yaml.safe_load(f)
 
 vector_store = VectorStore(config_path, use_cache=True)
-chat_model = ChatModel(vector_store)
-
 app = FastAPI()
 
 class SearchRequest(BaseModel):
@@ -29,7 +27,13 @@ class SearchRequest(BaseModel):
 
 class ChatRequest(BaseModel):
     user_input: str
-    conversation_history: List[Dict]
+    conversation_history: List[Tuple]
+    llm_model : Dict # {"provider": "ollama", "model_name": "llama3.1")}
+    
+class DatabaseQueryRequest(BaseModel):
+    database_type: str
+    database_url: str
+    user_question: str
 
 @app.post("/search")
 async def search_documents(request: SearchRequest):
@@ -60,6 +64,7 @@ async def webhook(request: Request):
 @app.post("/chat")
 async def chat(request: ChatRequest):
     try:
+        chat_model = ChatModel(vector_store, request.llm_model)
         answer, source_documents = chat_model.generate_response(
             request.user_input,
             request.conversation_history
@@ -69,6 +74,18 @@ async def chat(request: ChatRequest):
  
         return JSONResponse(content={"answer": answer, "source_documents": sources})
 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+    
+@app.post("/database_query")
+async def database_query(request: DatabaseQueryRequest):
+    try:
+        chat_model = ChatModel( vector_store,
+                            #   request.llm_model,
+                                database_chat_model = True
+                               )
+        result = chat_model.generate_database_response(request.database_type, request.database_url, request.user_question)
+        return JSONResponse(content={"answer": result})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

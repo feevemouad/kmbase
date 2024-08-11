@@ -7,7 +7,7 @@ class API:
     def __init__(self, base_url: str, token: str):
         self.base_url = base_url
         self.base_headers = {"token": f"{token}"}
-
+        
     # User-related methods
     def get_all_users(self):
         try:
@@ -285,4 +285,50 @@ class API:
             return response.json()
         except Exception as e:
             print(f"Error: {e}")
+            return None
+        
+    # Conversation-related methods
+    def create_conversation(self, user_id, conversation):
+        try:
+            data = {
+                "user_id": user_id,
+                "conversation": conversation
+            }
+            response = requests.post(f"{self.base_url}/conversations", json=data, headers=self.base_headers)
+            return response.json()
+        except:
+            return None
+
+    def get_conversation(self, conversation_id):
+        try:
+            response = requests.get(f"{self.base_url}/conversations/{conversation_id}", headers=self.base_headers)
+            if response.status_code == 200:
+                return response.json()
+            if response.status_code == 404:
+                return {"message": "Conversation Not Found", "status_code": 404}
+        except:
+            return None
+
+    def update_conversation(self, conversation_id, conversation):
+        try:
+            data = {
+                "conversation": conversation
+            }
+            response = requests.put(f"{self.base_url}/conversations/{conversation_id}", json=data, headers=self.base_headers)
+            return response.json()
+        except:
+            return None
+
+    def get_all_conversations(self):
+        try:
+            response = requests.get(f"{self.base_url}/conversations", headers=self.base_headers)
+            return response.json()
+        except:
+            return None
+        
+    def delete_conversation(self, conversation_id):
+        try:
+            response = requests.delete(f"{self.base_url}/conversations/{conversation_id}", headers=self.base_headers)
+            return response.json()
+        except:
             return None

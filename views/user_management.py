@@ -29,7 +29,7 @@ def register_users(api):
             last_name = st.text_input("Last Name")
             email = st.text_input("Email")
             password = st.text_input("Password", type="password")
-            role = st.selectbox("Role", ["User", "Admin"])
+            role = st.selectbox("Role", ["User", "SuperUser", "Support"])
             submit_button = st.form_submit_button(label="Register", type = "primary")
             
             if submit_button:

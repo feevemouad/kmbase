@@ -8,6 +8,10 @@ from routes.user_routes import user_bp
 from routes.pdf_routes import pdf_bp
 from routes.auth_routes import auth_bp
 from routes.feedback_routes import feedback_bp
+from routes.conversation_routes import conversation_bp
+
+
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -27,6 +31,7 @@ app.register_blueprint(user_bp, url_prefix='/api')
 app.register_blueprint(pdf_bp, url_prefix='/api')
 app.register_blueprint(auth_bp, url_prefix='/api')
 app.register_blueprint(feedback_bp, url_prefix='/api')
+app.register_blueprint(conversation_bp, url_prefix='/api')
 
 @app.before_request
 def create_tables():

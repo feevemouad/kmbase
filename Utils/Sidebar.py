@@ -1,3 +1,4 @@
+import time
 import streamlit as st
 from streamlit_option_menu import option_menu
 from Utils.Logout import Logout
@@ -8,15 +9,19 @@ class Sidebar:
         self.api = api
         if not "userdata" in st.session_state :
             st.session_state["userdata"] = self.api.get_user_by_username(st.session_state["username"])
-        # self.navigation = ["Assistant","Home", "My Documents", "Upload Files", "Account Settings"]
-        self.navigation = ["Home", "Documents", "Upload Files", "Account Settings"]
-        # self.nav_icons = ["alexa","house", "file-earmark-text", "file-earmark-arrow-up", "gear"]
-        self.nav_icons = ["alexa", "file-earmark-text", "file-earmark-arrow-up", "gear"]
-        if st.session_state["userdata"]["role"] == "Admin":
-            self.navigation.append("User Management")
-            self.navigation.append("Dashboard")
-            self.nav_icons.append("people")
-            self.nav_icons.append("diagram-3")
+        if st.session_state["userdata"]["role"] == "SuperUser":
+            self.navigation = ["Home", "DB Assistant", "Documents", "Upload Files", "Account Settings", "User Management", "Dashboard"]
+            self.nav_icons = ["alexa", "database","file-earmark-text", "file-earmark-arrow-up", "gear", "people", "diagram-3"]
+        elif st.session_state["userdata"]["role"] == "Support" :
+            self.navigation = ["Home", "Documents", "Upload Files", "Account Settings"]
+            self.nav_icons = ["alexa", "file-earmark-text", "file-earmark-arrow-up", "gear"]
+        elif st.session_state["userdata"]["role"] == "User" :
+            self.navigation = ["Home", "Documents", "Account Settings"]
+            self.nav_icons = ["alexa", "file-earmark-text", "gear"]
+
+        self.fix_sidebar_width()
+
+    def fix_sidebar_width(self):
         st.markdown(
             """
             <style>
@@ -27,7 +32,7 @@ class Sidebar:
             """,
             unsafe_allow_html=True,
         )
-        
+
     def render_sidebar(self):
                 
         with st.sidebar:
@@ -41,9 +46,8 @@ class Sidebar:
                 options=self.navigation,
                 icons=self.nav_icons,  # Optional: add icons to the options
                 # menu_icon="cast",  # Optional: set the menu icon
-                default_index=1,  # Optional: set the default selected option
+                default_index=2,  # Optional: set the default selected option
                 )            
-            # st.session_state['current_page'] = selected
         return selected
     
     def affiche_profile_and_name(self):
@@ -91,18 +95,4 @@ class Sidebar:
             """,
             unsafe_allow_html=True
         )
-
-    def get_default_index(self):
-        # Map page names to their index in the option menu
-        page_indices = {
-            "Home": 0,
-            "Documents": 1,
-            "Upload Files": 2,
-            "Account Settings": 3,
-            "User Management": 4
-        }
-        # Get the current page from session state, defaulting to "Home"
-        current_page = st.session_state.get('current_page', "Home")
-        # Return the index of the current page
-        return page_indices.get(current_page, 0)
 

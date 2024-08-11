@@ -8,7 +8,7 @@ class Login:
         _,col2,_ = st.columns([0.25, 0.5, 0.25])
         with col2:
             st.header("Login")
-            username = st.text_input("Username")
+            username = st.text_input("Username").strip()
             password = st.text_input("Password", type="password")
             if st.button("Login", type = "primary"):
                 if username and password:

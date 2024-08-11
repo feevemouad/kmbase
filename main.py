@@ -1,7 +1,7 @@
 import streamlit as st
 from Utils.Login import Login
 from Utils.Sidebar import Sidebar
-from Views import chat, docs, file_upload, acc_settings, user_management, dashboard
+from Views import chat, sql_chatbot, docs, file_upload, acc_settings, user_management, dashboard
 from API import API 
 
 
@@ -13,6 +13,8 @@ def main_app(api):
     selected_page = sidebar.render_sidebar()
     if selected_page == "Home":
         chat.create_page(api)
+    elif selected_page == "DB Assistant":
+        sql_chatbot.create_page()
     elif selected_page == "Documents":
         docs.create_page(api)
     elif selected_page == "Account Settings":
