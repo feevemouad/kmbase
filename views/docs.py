@@ -14,6 +14,9 @@ def create_page(api):
     
     if "filtered_documents" not in st.session_state:
         st.session_state["filtered_documents"] = None
+        
+    if st.button("Refresh", type= 'primary'):
+        st.session_state["refresh"] = True        
 
     if st.session_state["pdf_path"] is None and st.session_state["editing"] is None:
         # Only show search input on the main document listing page

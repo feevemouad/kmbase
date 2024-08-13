@@ -129,6 +129,11 @@ class Document():
             st.session_state["pdfs"] = self.api.get_all_pdfs_with_description()
             return st.session_state["pdfs"]
 
+        if "refresh" in st.session_state and st.session_state["refresh"]:
+            st.session_state["filtered_documents"] = None
+            st.session_state["search_query"] = ""
+            st.session_state["pdfs"] = self.api.get_all_pdfs_with_description()
+
         if "pdfs" not in st.session_state:
             st.session_state["pdfs"] = self.api.get_all_pdfs_with_description()
         return st.session_state["pdfs"]

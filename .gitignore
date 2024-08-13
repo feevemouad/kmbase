@@ -12,3 +12,4 @@ test.ipynb
 test.py
 .dev/
 Data/
+.cache/

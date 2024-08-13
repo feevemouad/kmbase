@@ -25,3 +25,10 @@ chat_model:
 vector_store:
   cache_file: '../Stubs/faiss_index_cache.pkl'
   dimension: 768  
+
+langsmith:
+  LANGCHAIN_TRACING_V2: "true"
+  LANGCHAIN_ENDPOINT : "https://api.smith.langchain.com"
+  LANGCHAIN_API_KEY : "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"
+  LANGCHAIN_PROJECT : "kbasellms"
+

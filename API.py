@@ -332,3 +332,48 @@ class API:
             return response.json()
         except:
             return None
+
+    # SQL Database Q&A methods
+    def create_sql_database_qa(self, user_id, conversation):
+        try:
+            data = {
+                "user_id": user_id,
+                "conversation": conversation
+            }
+            response = requests.post(f"{self.base_url}/sql-database-qa", json=data, headers=self.base_headers)
+            return response.json()
+        except:
+            return None
+
+    def get_sql_database_qa(self, qa_id):
+        try:
+            response = requests.get(f"{self.base_url}/sql-database-qa/{qa_id}", headers=self.base_headers)
+            if response.status_code == 200:
+                return response.json()
+            if response.status_code == 404:
+                return {"message": "SQL Database Q&A Not Found", "status_code": 404}
+        except:
+            return None
+
+    def get_all_sql_database_qa(self):
+        try:
+            response = requests.get(f"{self.base_url}/sql-database-qa", headers=self.base_headers)
+            return response.json()
+        except:
+            return None
+
+    def get_user_sql_database_qa(self, user_id):
+        try:
+            response = requests.get(f"{self.base_url}/users/{user_id}/sql-database-qa", headers=self.base_headers)
+            return response.json()
+        except:
+            return None
+
+    def delete_sql_database_qa(self, qa_id):
+        try:
+            response = requests.delete(f"{self.base_url}/sql-database-qa/{qa_id}", headers=self.base_headers)
+            return response.json()
+        except:
+            return None
+
+

@@ -14,7 +14,7 @@ def main_app(api):
     if selected_page == "Home":
         chat.create_page(api)
     elif selected_page == "DB Assistant":
-        sql_chatbot.create_page()
+        sql_chatbot.create_page(api)
     elif selected_page == "Documents":
         docs.create_page(api)
     elif selected_page == "Account Settings":

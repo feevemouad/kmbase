@@ -9,8 +9,7 @@ from routes.pdf_routes import pdf_bp
 from routes.auth_routes import auth_bp
 from routes.feedback_routes import feedback_bp
 from routes.conversation_routes import conversation_bp
-
-
+from routes.sql_database_qa_routes import sql_database_qa_bp
 
 
 app = Flask(__name__)
@@ -32,6 +31,8 @@ app.register_blueprint(pdf_bp, url_prefix='/api')
 app.register_blueprint(auth_bp, url_prefix='/api')
 app.register_blueprint(feedback_bp, url_prefix='/api')
 app.register_blueprint(conversation_bp, url_prefix='/api')
+app.register_blueprint(sql_database_qa_bp, url_prefix='/api')
+
 
 @app.before_request
 def create_tables():

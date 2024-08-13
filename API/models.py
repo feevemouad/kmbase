@@ -48,6 +48,14 @@ class Conversation(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     last_updated = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
+class SQLDatabaseQA(db.Model):
+    __tablename__ = "sql_database_qa"
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
+    conversation = db.Column(db.JSON, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+Users.sql_database_qa = db.relationship('SQLDatabaseQA', backref='user', lazy=True)
 Users.conversations = db.relationship('Conversation', backref='user', lazy=True)
 Users.pdfs = db.relationship('PDFs', backref='user', lazy=True)
 PDFs.metadata = db.relationship('PDFMetadata', backref='pdf', lazy=True, cascade='all, delete-orphan')
