@@ -10,14 +10,15 @@ import io
 from src.chat_model import ChatModel
 from src.vector_store import VectorStore
 
-os.environ["LANGCHAIN_TRACING_V2"] = "true"
-os.environ["LANGCHAIN_ENDPOINT"]="https://api.smith.langchain.com"
-os.environ["LANGCHAIN_API_KEY"]="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"
-os.environ["LANGCHAIN_PROJECT"]="kbasellms"
-
 config_path = '../config/config.yml'
 with open(config_path, 'r') as f:
     config = yaml.safe_load(f)
+    
+os.environ["LANGCHAIN_TRACING_V2"]=config["langsmith"]["LANGCHAIN_TRACING_V2"]
+os.environ["LANGCHAIN_ENDPOINT"]=config["langsmith"]["LANGCHAIN_ENDPOINT"]
+os.environ["LANGCHAIN_API_KEY"]=config["langsmith"]["LANGCHAIN_API_KEY"]
+os.environ["LANGCHAIN_PROJECT"]=config["langsmith"]["LANGCHAIN_PROJECT"]
+
 
 vector_store = VectorStore(config_path, use_cache=True)
 app = FastAPI()
@@ -34,6 +35,7 @@ class DatabaseQueryRequest(BaseModel):
     database_type: str
     database_url: str
     user_question: str
+    llm_model : Dict
 
 @app.post("/search")
 async def search_documents(request: SearchRequest):
@@ -81,7 +83,7 @@ async def chat(request: ChatRequest):
 async def database_query(request: DatabaseQueryRequest):
     try:
         chat_model = ChatModel( vector_store,
-                            #   request.llm_model,
+                                request.llm_model,
                                 database_chat_model = True
                                )
         result = chat_model.generate_database_response(request.database_type, request.database_url, request.user_question)
