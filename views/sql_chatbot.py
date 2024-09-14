@@ -40,9 +40,9 @@ def create_page(api):
                     with st.spinner("Processing your query..."):
                         try:
                             response = requests.post(
-                                f"http://localhost:8000/database_query",
+                                f"http://localhost:8001/query-database",
                                 json={
-                                    "database_type": database_type,
+                                    "database_type": database_type.lower(),
                                     "database_url": database_url,
                                     "user_question": user_question,
                                     "llm_model": st.session_state["db_llm_model"]
@@ -51,12 +51,12 @@ def create_page(api):
                             response.raise_for_status()
                             result = response.json()
                             st.markdown(f"""
-        :orange[**Answer :**] {result["answer"]["result"]}""")
+        :orange[**Answer :**] {result["result"]["output"]}""")
                             
                             # Store the Q&A in the database
                             conversation = {
                                 "question": user_question,
-                                "answer": result["answer"]["result"],
+                                "answer": result["result"]["output"],
                                 "database_type": database_type,
                                 "database_url": database_url
                             }
@@ -111,7 +111,7 @@ def add_model_selection():
                 st.session_state["db_llm_model"] = {"provider": "groq", "api_key": groq_api_key.strip()}
                     
             elif provider == "together":
-                st.session_state["db_llm_model"] = {"provider": "together", "api_key": together_api_key.strip(),"model": model.strip()}
+                st.session_state["db_llm_model"] = {"provider": "together", "api_key": together_api_key.strip(),"model_name": model.strip()}
 
             st.success("Model choices saved successfully.")
             time.sleep(0.8)

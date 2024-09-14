@@ -27,22 +27,21 @@ class Classification(BaseModel):
     )
 
 class ChatModel:
-    def __init__(self, vector_store, llm_model = {"provider": "ollama", "model_name": "llama3.1"}, database_chat_model = False):
+    def __init__(self, vector_store, llm_model = {"provider": "ollama", "model_name": "llama3.1"}):
         config = vector_store.config["chat_model"]
                 
         # Default to Ollama Llama 3.1
         default_model = {"provider": "ollama", "model_name": "llama3.1"}
         self._initialize_model(config, llm_model, default_model)
 
-        if not database_chat_model:
-            self.init_self_check_chain(type = "input")
-            self.retriever = vector_store.retriever
-            self.init_contextualize_question_chain()
-            self.init_hyde_generation_chain()
-            self.init_interaction_chain()
-            self.init_rag_chain()
-            self.init_route_chain()
-            self.init_self_check_chain(type = "output")
+        self.init_self_check_chain(type = "input")
+        self.retriever = vector_store.retriever
+        self.init_contextualize_question_chain()
+        self.init_hyde_generation_chain()
+        self.init_interaction_chain()
+        self.init_rag_chain()
+        self.init_route_chain()
+        self.init_self_check_chain(type = "output")
       
     def _initialize_model(self, config, llm_model, default_model):
         try:
@@ -62,12 +61,12 @@ class ChatModel:
                                                             huggingfacehub_api_token=llm_model.get("api_key"))
 
             elif llm_model.get("provider") == "groq":
-                self.llm = ChatGroq(model=llm_model.get("model"), api_key=llm_model.get("api_key"), temperature=0.8)
-                self._deterministic_llm = ChatGroq(model=llm_model.get("model"), api_key=llm_model.get("api_key"), temperature=0.1)
+                self.llm = ChatGroq(model=llm_model.get("model_name"), api_key=llm_model.get("api_key"), temperature=0.8)
+                self._deterministic_llm = ChatGroq(model=llm_model.get("model_name"), api_key=llm_model.get("api_key"), temperature=0.1)
 
             elif llm_model.get("provider") == "together":
-                self.llm = ChatTogether(together_api_key=llm_model.get("api_key"), model=llm_model.get("model"))
-                self._deterministic_llm = ChatTogether(together_api_key=llm_model.get("api_key"), model=llm_model.get("model"), temperature=0.1)
+                self.llm = ChatTogether(together_api_key=llm_model.get("api_key"), model=llm_model.get("model_name"))
+                self._deterministic_llm = ChatTogether(together_api_key=llm_model.get("api_key"), model=llm_model.get("model_name"), temperature=0.1)
                 
             else:
                 raise ValueError(f"Unknown LLM provider: {llm_model.get('provider')}")
@@ -77,17 +76,7 @@ class ChatModel:
             # Fall back to default Ollama Llama 3.1
             self.llm = ChatOllama(model=default_model.get("model_name"), base_url=config["endpoint"])
             self._deterministic_llm = ChatOllama(model=default_model.get("model_name"), base_url=config["endpoint"], temperature=0.0)
-            
-    def generate_database_response(self, database_type: str, database_url: str, user_question: str):
-        connection_string = self.get_connection_string(database_type, database_url)
-        db = SQLDatabase.from_uri(connection_string)
-        db_chain = SQLDatabaseSequentialChain.from_llm(llm=self._deterministic_llm, db=db, use_query_checker=True)
-        try : 
-            result = db_chain.invoke(user_question, config={'callbacks': [ConsoleCallbackHandler()]})
-        except Exception as e:
-            raise
-        return result
-    
+                
     def generate_response(self, user_input, chat_history):
         try:            
             
@@ -390,16 +379,3 @@ Ensure the reformulated question is in the same language as the user message."""
             # If parsing fails, return a default Classification
             return Classification(category="OutOfTopic")
         
-    def get_connection_string(self, db_type: str, db_url: str) -> str:
-        # Split the URL by '//' and take the last part
-        url_parts = db_url.split('//')
-        connection_details = url_parts[-1]
-
-        if db_type == "Oracle":
-            return f"oracle+cx_oracle://{connection_details}"
-        elif db_type == "MySQL":
-            return f"mysql+pymysql://{connection_details}"
-        elif db_type == "PostgreSQL":
-            return f"postgresql://{connection_details}"
-        else:
-            raise ValueError("Unsupported database type")

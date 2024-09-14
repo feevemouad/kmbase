@@ -14,11 +14,13 @@ config_path = '../config/config.yml'
 with open(config_path, 'r') as f:
     config = yaml.safe_load(f)
     
-os.environ["LANGCHAIN_TRACING_V2"]=config["langsmith"]["LANGCHAIN_TRACING_V2"]
-os.environ["LANGCHAIN_ENDPOINT"]=config["langsmith"]["LANGCHAIN_ENDPOINT"]
-os.environ["LANGCHAIN_API_KEY"]=config["langsmith"]["LANGCHAIN_API_KEY"]
-os.environ["LANGCHAIN_PROJECT"]=config["langsmith"]["LANGCHAIN_PROJECT"]
-
+try : 
+    os.environ["LANGCHAIN_TRACING_V2"]=config["langsmith"]["LANGCHAIN_TRACING_V2"]
+    os.environ["LANGCHAIN_ENDPOINT"]=config["langsmith"]["LANGCHAIN_ENDPOINT"]
+    os.environ["LANGCHAIN_API_KEY"]=config["langsmith"]["LANGCHAIN_API_KEY"]
+    os.environ["LANGCHAIN_PROJECT"]=config["langsmith"]["LANGCHAIN_PROJECT"]
+except:
+    pass
 
 vector_store = VectorStore(config_path, use_cache=True)
 app = FastAPI()
@@ -79,17 +81,5 @@ async def chat(request: ChatRequest):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     
-@app.post("/database_query")
-async def database_query(request: DatabaseQueryRequest):
-    try:
-        chat_model = ChatModel( vector_store,
-                                request.llm_model,
-                                database_chat_model = True
-                               )
-        result = chat_model.generate_database_response(request.database_type, request.database_url, request.user_question)
-        return JSONResponse(content={"answer": result})
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
