@@ -12,8 +12,8 @@
 ### 1. Clone the Repository
 
 ```
-git clone [your-repo-url]
-cd [your-project-directory]
+git clone https://github.com/feevemouad/kmbase
+cd kmbase
 ```
 
 ### 2. Set Up Anaconda Environment
