@@ -91,6 +91,7 @@ def generate_response(prompt_input):
         "conversation_history": conversation_history,
         "llm_model": st.session_state["llm_model"]
                }
+    print(payload)
     headers = {"Content-Type": "application/json"}
     try:
         response = requests.post("http://127.0.0.1:8000/chat", json=payload, headers=headers)
@@ -127,6 +128,7 @@ def add_model_selection():
         elif llm_model_choice == "Groq":
             provider = "groq"
             groq_api_key = st.text_input("Enter Groq API key", type="password")
+            model = st.text_input("Enter model name")
                 
         elif llm_model_choice == "Together.AI":
             provider = "together"
@@ -144,7 +146,7 @@ def add_model_selection():
                 st.session_state["llm_model"] = {"provider": "huggingface","api_key": huggingface_api_token, "model_id": huggingface_model_name_id.strip()}
                     
             elif provider == "groq":
-                st.session_state["llm_model"] = {"provider": "groq", "api_key": groq_api_key.strip()}
+                st.session_state["llm_model"] = {"provider": "groq", "api_key": groq_api_key.strip(),"model_name": model.strip()}
                     
             elif provider == "together":
                 st.session_state["llm_model"] = {"provider": "together", "api_key": together_api_key.strip(),"model": model.strip()}
