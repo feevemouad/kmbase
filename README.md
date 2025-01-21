@@ -12,8 +12,8 @@
 ### 1. Clone the Repository
 
 ```
-git clone [your-repo-url]
-cd [your-project-directory]
+git clone https://github.com/feevemouad/kmbase
+cd kmbase
 ```
 
 ### 2. Set Up Anaconda Environment
@@ -61,14 +61,14 @@ cd [your-project-directory]
 8. Set up a webhook for Minio bucket events:
    - Go to "Buckets" > [Your Bucket] > "Events"
    - Click "Add New Event Notification"
-   - Configure the event types and specify the endpoint URL for your webhook
+   - Configure the event types and specify the endpoint URL for your webhook (http://127.0.0.1:8000/webhookcallback)
 
 ## Running the Application
 
 
 1. Start the Minio server:
    ```
-   C:\minio.exe server "C:\Users\Mouad\Desktop\kM\Data" --console-address ":9001"
+   minio.exe server ".\Data" --console-address ":9001"
    ```
 Ensure you're in the project's root directory and the Conda environment is activated. Run each command in a separate terminal window or tab.
 
@@ -86,5 +86,12 @@ Ensure you're in the project's root directory and the Conda environment is activ
 4. Run the Assistant:
    ```
    cd .\Assistant\
-   uvicorn main:app
+   uvicorn main:app --reload --host 0.0.0.0 --port 8000
+   ```
+
+   
+5. Run the SQL DataBase Assistant:
+   ```
+   cd .\Db_Assistant\
+   uvicorn main:app --reload --host 0.0.0.0 --port 8001
    ```
